@@ -35,7 +35,7 @@ parser.add_argument('-s', '--server', metavar='host', required=True,
                     type=str, nargs=1, help='imap server', dest='host')
 parser.add_argument('-u', '--user', metavar='username', required=False, 
                     type=str, nargs=1, help='username, use systemuser as default', dest='user')
-parser.add_argument('-m', '--mailbox', metavar='name', required=False, default='INBOX',
+parser.add_argument('-m', '--mailbox', metavar='name', required=False, default=['INBOX'],
                     type=str, nargs=1, help='select mailbox, default is INBOX')
 parser.add_argument('-v', '--verbose', action='store_true')
 args = parser.parse_args()
@@ -83,7 +83,7 @@ key_msg = key_msg_uid[0].split()
 # gpg section
 cx = gpgme.Context()
 
-for uid in key_msg:
+for uid in reversed(key_msg):
     rc, data = M.uid('fetch', uid, "(RFC822)")
 
     if not rc == 'OK':
