@@ -2,3 +2,4 @@ see gpg_sign.py -h for usage info
 check requirements file
 
 note: gpg_sign_import doesn't publish the imported keys by itself
+use gpg --send-keys <keyid> to send your key
