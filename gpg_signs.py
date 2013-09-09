@@ -77,7 +77,7 @@ if not rc == 'OK':
     logger.fatal('Selecting inbox failed: %s', msg[0])
     sys.exit(3)
 
-rc, key_msg_uid = M.uid('search', None, 'HEADER Subject "Your signed PGP key"')
+rc, key_msg_uid = M.uid('search', None, 'HEADER Subject "PGP key"')
 key_msg = key_msg_uid[0].split()
 
 # gpg section
@@ -100,8 +100,17 @@ for uid in reversed(key_msg):
     logger.info('{0} [{1}]'.format(mail['FROM'], uid))
 
     logger.debug('{0} [{1}]: start decrypt'.format(mail['FROM'], uid))
-    d = decrypt(mail.get_payload()[1])
-    logger.debug('{0}: decrypt finished'.format(uid))
-    logger.debug('{0} [{1}]: start import'.format(mail['FROM'], uid))
-    cx.import_(d)
-    logger.debug('{0}: import finished'.format(uid))
+    payload = mail.get_payload()
+    for attachment in payload:
+        logger.debug(attachment.get_content_type())
+        if not attachment.get_content_type() == 'application/octet-stream':
+            continue
+    
+        try:
+            d = decrypt(attachment)
+            logger.debug('{0}: decrypt finished'.format(uid))
+            logger.debug('{0} [{1}]: start import'.format(mail['FROM'], uid))
+            cx.import_(d)
+            logger.debug('{0}: import finished'.format(uid))
+        except gpgme.GpgmeError as e:
+            logger.debug(e)
