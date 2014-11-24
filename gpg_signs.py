@@ -1,4 +1,6 @@
+#!/usr/bin/python
 # coding: utf-8
+
 import sys
 import email
 import imaplib
@@ -31,9 +33,9 @@ def decrypt(msg):
 # argparse stuff
 parser = argparse.ArgumentParser(description='Load public keys from imaps server, decrypt with main key, import into gpg.\nHandy after signing parties.')
 
-parser.add_argument('-s', '--server', metavar='host', required=True, 
+parser.add_argument('-s', '--server', metavar='host', required=True,
                     type=str, nargs=1, help='imap server', dest='host')
-parser.add_argument('-u', '--user', metavar='username', required=False, 
+parser.add_argument('-u', '--user', metavar='username', required=False,
                     type=str, nargs=1, help='username, use systemuser as default', dest='user')
 parser.add_argument('-m', '--mailbox', metavar='name', required=False, default=['INBOX'],
                     type=str, nargs=1, help='select mailbox, default is INBOX')
@@ -45,7 +47,6 @@ if args.verbose:
 
 # imap part
 host = args.host[0]
-print(host)
 logger.info('Connect to %s', host)
 try:
     M = imaplib.IMAP4_SSL(host)
@@ -96,7 +97,7 @@ for uid in reversed(key_msg):
     if not mail.get_content_maintype() == 'multipart':
         logger.warn('{0}: missing attachment'.format(uid))
         continue
-    
+
     logger.info('{0} [{1}]'.format(mail['FROM'], uid))
 
     logger.debug('{0} [{1}]: start decrypt'.format(mail['FROM'], uid))
@@ -105,7 +106,7 @@ for uid in reversed(key_msg):
         logger.debug(attachment.get_content_type())
         if not attachment.get_content_type() == 'application/octet-stream':
             continue
-    
+
         try:
             d = decrypt(attachment)
             logger.debug('{0}: decrypt finished'.format(uid))
