@@ -14,7 +14,6 @@ import socket
 # configure logger
 logger = logging.getLogger('import_gpg_signs')
 ch = logging.StreamHandler(sys.stdout)
-#ch.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
@@ -31,14 +30,18 @@ def decrypt(msg):
 
 
 # argparse stuff
-parser = argparse.ArgumentParser(description='Load public keys from imaps server, decrypt with main key, import into gpg.\nHandy after signing parties.')
+description = """Load public keys from IMAPS server, decrypt with main key,
+import into gpg.\nHandy after signing parties."""
 
+parser = argparse.ArgumentParser(description=description)
 parser.add_argument('-s', '--server', metavar='host', required=True,
                     type=str, nargs=1, help='imap server', dest='host')
 parser.add_argument('-u', '--user', metavar='username', required=False,
-                    type=str, nargs=1, help='username, use systemuser as default', dest='user')
-parser.add_argument('-m', '--mailbox', metavar='name', required=False, default=['INBOX'],
-                    type=str, nargs=1, help='select mailbox, default is INBOX')
+                    type=str, nargs=1, dest='user',
+                    help='username, use systemuser as default')
+parser.add_argument('-m', '--mailbox', metavar='name', required=False,
+                    default=['INBOX'], type=str, nargs=1,
+                    help='select mailbox, default is INBOX')
 parser.add_argument('-v', '--verbose', action='store_true')
 args = parser.parse_args()
 
